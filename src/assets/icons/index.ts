@@ -25,3 +25,6 @@ export { default as Calendar } from './calendar';
 export { default as Search } from './search';
 export { default as Sleeping } from './sleeping';
 export { default as Zzz } from './zzz';
+export { default as Loop } from './loop';
+export { default as ArrowLeft } from './arrowLeft';
+export { default as Tick } from './tick';

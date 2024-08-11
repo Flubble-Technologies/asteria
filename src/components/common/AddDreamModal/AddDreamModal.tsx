@@ -5,6 +5,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import DreamInput from './DreamInput';
 import DatePickerComponent from './DatePicker';
 import DreamTypeSelector from './DreamTypeSelector';
+import DreamProcessingModal from '../DreamProcessingModal';
 
 const { height, width } = Dimensions.get('window');
 
@@ -17,6 +18,7 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
     const [selectedType, setSelectedType] = useState<string | null>('dream');
     const [openDatePicker, setOpenDatePicker] = useState(false);
     const [date, setDate] = useState(new Date());
+    const [showProcessingModal, setShowProcessingModal] = useState(false);
 
     return (
         <Modal
@@ -48,7 +50,10 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
                             />
                             <TouchableOpacity
                                 style={styles.addButton}
-                                onPress={toggleModal}
+                                onPress={() => {
+                                    //toggleModal();
+                                    setShowProcessingModal(true);
+                                }}
                             >
                                 <Text style={styles.addButtonText}>Add Dream</Text>
                             </TouchableOpacity>
@@ -56,6 +61,10 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
+                <DreamProcessingModal
+                    isVisible={showProcessingModal}
+                    onClose={() => setShowProcessingModal(false)}
+                />
             </KeyboardAwareScrollView>
         </Modal>
     );

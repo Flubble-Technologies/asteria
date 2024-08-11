@@ -1,8 +1,15 @@
 import React from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../../types/navigation';
 
 const { width, height } = Dimensions.get('window');
+
+interface AnalysisProps {
+    selectedTimeFrame: string;
+}
 
 const mockData = [
     {
@@ -32,7 +39,7 @@ const mockData = [
         title: 'Sleep Quality and Dream Relationship',
         subtitle: 'Linking sleep patterns to dream quality',
         image: require('../../assets/analysis/sleepQuality/sleepQuality2.png'),
-        colors: ['#4A90E2', '#599BE7','#81B7F5']
+        colors: ['#4A90E2', '#599BE7', '#81B7F5']
     },
     {
         id: 5,
@@ -43,11 +50,23 @@ const mockData = [
     }
 ];
 
-const Analysis = () => {
+const Analysis = ({ selectedTimeFrame }: AnalysisProps) => {
+    const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+
+    const handleAnalysisPress = (analysisTitle: string) => {
+        console.log("Selected TimeFrame:", selectedTimeFrame);
+        const mockAnalysisData = {
+            title: analysisTitle,
+            timeFrame: selectedTimeFrame,
+            results: 'This is a mock analysis result based on the selected time frame and analysis type.'
+        };
+        navigation.navigate('AsteriaChat', { analysisData: mockAnalysisData });
+    };;
+
     return (
         <FlatList
             style={{ marginTop: 10 }}
-            contentContainerStyle={{paddingBottom:40,marginTop: 25}}
+            contentContainerStyle={{ paddingBottom: 40, marginTop: 25 }}
             showsVerticalScrollIndicator={false}
             data={mockData}
             keyExtractor={(item) => item.id.toString()}
@@ -56,7 +75,7 @@ const Analysis = () => {
                     colors={item.colors}
                     style={styles.itemContainer}
                     start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                    <TouchableOpacity style={{}}>
+                    <TouchableOpacity onPress={() => handleAnalysisPress(item.title)}>
                         <Text style={{ color: 'rgba(255,255,255,1)', fontSize: width * 0.057, fontFamily: 'Outfit-SemiBold', paddingRight: 140 }}>{item.title}</Text>
                         <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: width * 0.042, fontFamily: 'Outfit-Regular', paddingRight: 160, marginTop: 5, }}>{item.subtitle}</Text>
                         <Image source={item.image} style={{ width: 160, height: 160, resizeMode: 'cover', position: 'absolute', right: 0, top: 0, zIndex: -1, }} />

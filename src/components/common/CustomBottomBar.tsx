@@ -56,7 +56,6 @@ const CustomBottomBar = ({ state, navigation }: CustomBottomBarProps) => {
                             else if (route.name === 'Settings') return <Settings size={width * 0.055} color='#fff' />;
                         };
 
-                        // Margin to adjust DreamDiary and Statistics icons
                         const buttonStyle = [
                             styles.button,
                             isFocused && styles.selectedButton,

@@ -15,22 +15,22 @@ const StatisticsAndAnalysis = () => {
 		weekly: {
 			dreams: { Dream: 10, Nightmare: 2, Lucid: 3 },
 			emotions: { positive: 10, negative: 15, neutral: 5 },
-			recurringElements: { "Kırmızı Ev": 3, "Orman": 4, "Fil": 2, "Kediler": 1, "Köpekler": 1 }
+			recurringElements: { "Red House": 3, "Forest": 4, "Elephant": 2, "Cats": 1, "Dogs": 1 }
 		},
 		monthly: {
 			dreams: { Dream: 24, Nightmare: 8, Lucid: 12 },
 			emotions: { positive: 30, negative: 40, neutral: 30 },
-			recurringElements: { "Kırmızı Ev": 10, "Orman": 12, "Fil": 8, "Kediler": 5, "Köpekler": 3 }
+			recurringElements: { "Red House": 10, "Forest": 12, "Elephant": 8, "Cats": 5, "Dogs": 3 }
 		},
 		yearly: {
 			dreams: { Dream: 280, Nightmare: 100, Lucid: 150 },
 			emotions: { positive: 360, negative: 480, neutral: 300 },
-			recurringElements: { "Kırmızı Ev": 50, "Orman": 60, "Fil": 40, "Kediler": 20, "Köpekler": 15 }
+			recurringElements: { "Red House": 50, "Forest": 60, "Elephant": 40, "Cats": 20, "Dogs": 15 }
 		},
 		allTime: {
 			dreams: { Dream: 314, Nightmare: 110, Lucid: 165 },
 			emotions: { positive: 400, negative: 550, neutral: 335 },
-			recurringElements: { "Kırmızı Ev": 63, "Orman": 76, "Fil": 50, "Kediler": 26, "Köpekler": 20 }
+			recurringElements: { "Red House": 63, "Forest": 76, "Elephant": 50, "Cats": 26, "Dogs": 20 }
 		}
 	};
 	
@@ -180,7 +180,7 @@ const StatisticsAndAnalysis = () => {
 			</View>
 
 			{selectedTab === 'Analysis' ? (
-				<Analysis />
+				<Analysis selectedTimeFrame={selectedTimeFrame} />
 			) : (
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 					<Statistics

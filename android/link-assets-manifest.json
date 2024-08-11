@@ -2,6 +2,22 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "src/assets/fonts/AmaticSC-Bold.ttf",
+      "sha1": "845b7ea45a082b12bebd77a16d2cfb671892de1c"
+    },
+    {
+      "path": "src/assets/fonts/AmaticSC-Regular.ttf",
+      "sha1": "9aa9f1b9ddbd8340e415b538c513ee2ab92ee2e2"
+    },
+    {
+      "path": "src/assets/fonts/Bangers-Regular.ttf",
+      "sha1": "16e3bc27f1343b6661711eaacb999be3307790d4"
+    },
+    {
+      "path": "src/assets/fonts/Handlee-Regular.ttf",
+      "sha1": "7bfbcc74e78e521eac4dba8f33817675f9b1340c"
+    },
+    {
       "path": "src/assets/fonts/Outfit-Black.ttf",
       "sha1": "51e4964fd4b0072e2f90fd3b1d9883a142130e74"
     },
@@ -40,6 +56,14 @@
     {
       "path": "src/assets/fonts/Outfit-VariableFont_wght.ttf",
       "sha1": "0b864532623abe9e381ab191b4eb66021db9829d"
+    },
+    {
+      "path": "src/assets/fonts/PatrickHand-Regular.ttf",
+      "sha1": "8e9d9952d4f107775141b5ae00eeb3cac3a19d46"
+    },
+    {
+      "path": "src/assets/fonts/Satisfy-Regular.ttf",
+      "sha1": "fd2f096e9d0cd82b9f8e191d7f73167176d0f729"
     }
   ]
 }

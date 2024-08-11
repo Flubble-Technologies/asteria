@@ -27,16 +27,25 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
         formatYLabel: (yValue: string) => Math.floor(parseInt(yValue)).toString(),
     };
 
+    const updatedDreamsPieData = dreamsPieData.map((item, index) => ({
+        ...item,
+        color: index === 0 ? '#7E57C2' : index === 1 ? '#71308F' : '#AF9AD3'
+    }));
+    const updatedEmotionsPieData = emotionsPieData.map((item, index) => ({
+        ...item,
+        color: index === 0 ? '#7E57C2' : index === 1 ? '#71308F' : '#AF9AD3'
+    }));
+
     return (
         <View>
             <View style={styles.totalDreamsContainer}>
                 <Sleeping size={width * 0.15} />
                 <View style={styles.totalDreamsTextContainer}>
-                    <Text style={styles.totalDreamsText}>Toplam Rüya Sayısı</Text>
+                    <Text style={styles.totalDreamsText}>Total Number of Dreams</Text>
                     <Text style={styles.totalDreamsCount}>{totalDreamsCount}</Text>
                 </View>
             </View>
-            <Text style={styles.chartTitle}>Rüya Görme Sıklığı</Text>
+            <Text style={styles.chartTitle}>Dream Frequency</Text>
             <BarChart
                 data={getDreamFrequencyData()}
                 width={width - 40}
@@ -48,11 +57,11 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                 }}
                 fromZero
                 showBarTops={true}
-                style={[styles.chart, {marginLeft: -25}]}
+                style={[styles.chart, { marginLeft: -25 }]}
             />
-            <Text style={styles.chartTitle}>Rüya Türü Dağılımı</Text>
+            <Text style={styles.chartTitle}>Dream Type Distribution</Text>
             <PieChart
-                data={dreamsPieData}
+                data={updatedDreamsPieData}
                 width={width - 40}
                 height={190}
                 chartConfig={chartConfig}
@@ -61,9 +70,9 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                 paddingLeft="15"
                 absolute
             />
-            <Text style={styles.chartTitle}>Duygu Analizi</Text>
+            <Text style={styles.chartTitle}>Emotion Analysis</Text>
             <PieChart
-                data={emotionsPieData}
+                data={updatedEmotionsPieData}
                 width={width - 40}
                 height={190}
                 chartConfig={chartConfig}
@@ -72,7 +81,7 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                 paddingLeft="15"
                 absolute
             />
-            <Text style={styles.chartTitle}>Yinelenen Öğeler</Text>
+            <Text style={styles.chartTitle}>Recurring Elements</Text>
             <BarChart
                 data={recurringElementsBarData}
                 width={width - 40}
@@ -84,7 +93,7 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                 }}
                 fromZero
                 showBarTops={true}
-                style={[styles.chart, {marginLeft: -25}]}
+                style={[styles.chart, { marginLeft: -25 }]}
             />
         </View>
     );

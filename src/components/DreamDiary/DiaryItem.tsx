@@ -7,12 +7,15 @@ const { width } = Dimensions.get('window');
 interface DiaryItemProps {
     item: {
         id: number;
-        name: string;
-        description: string;
+        color: string;
+        initialX: number;
+        initialY: number;
         date: string;
+        dreamTitle: string;
+        dreamDescription: string;
         type: string;
     };
-    index: number;
+    toggleModal: (item: any) => void;
 }
 
 const backgroundImages = [
@@ -35,11 +38,11 @@ const chooseIcon = (type: string) => {
     }
 }
 
-const DiaryItem = ({ item, index }: DiaryItemProps) => {
-    const backgroundImage = backgroundImages[index % backgroundImages.length];
+const DiaryItem = ({ item, toggleModal }: DiaryItemProps) => {
+    const backgroundImage = backgroundImages[item.id % backgroundImages.length];
 
     return (
-        <TouchableOpacity style={styles.touchable}>
+        <TouchableOpacity style={styles.touchable} onPress={() => toggleModal(item)}>
             <ImageBackground
                 source={backgroundImage}
                 style={styles.imageBackground}
@@ -57,7 +60,7 @@ const DiaryItem = ({ item, index }: DiaryItemProps) => {
                         </View>
                     </View>
                     <Text style={styles.nameText}>
-                        {item.name}
+                        {item.dreamTitle}
                     </Text>
                 </View>
             </ImageBackground>
