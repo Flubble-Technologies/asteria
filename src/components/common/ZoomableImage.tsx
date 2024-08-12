@@ -261,6 +261,8 @@ const ZoomableImage = ({ imageUrl }: ZoomableImageProps) => {
         );
     }, [width, height, imageUrl]);
 
+    console.log('url', imageUrl, typeof imageUrl);
+
     return (
         <View style={styles.root}>
             <GestureDetector gesture={Gesture.Simultaneous(pinch, pan, doubleTap)}>

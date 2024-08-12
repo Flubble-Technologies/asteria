@@ -3,15 +3,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, withSequence, runOnJS, cancelAnimation } from 'react-native-reanimated';
 import { BlurView } from '@react-native-community/blur';
 import Circle from '../../assets/icons/circle';
-import { storage } from '../../utils/mmkvConfig';
+import { updateDreamPositionApi } from '../../api/requests/dreams.api';
 
 const { width, height } = Dimensions.get('window');
 
 interface StarProps {
-	id: number;
+	id: string;
 	size: number;
 	color: string;
-	date: string;
+	date: Date | string;
 	style?: ViewStyle;
 	onPress?: () => void;
 	isAnimating: boolean;
@@ -22,10 +22,7 @@ interface StarProps {
 
 const Star = (props: StarProps) => {
 	const { id, size, color, date, onPress, isAnimating, initialX, initialY, onAnimComplete } = props;
-	const [position, setPosition] = useState(() => {
-		const savedPosition = storage.getString(`star_${id}`);
-		return savedPosition ? JSON.parse(savedPosition) : { x: initialX, y: initialY };
-	});
+	const [position, setPosition] = useState({ x: initialX, y: initialY });
 
 	const pan = useRef(new Animated2.ValueXY(position)).current;
 	useEffect(() => {
@@ -44,14 +41,19 @@ const Star = (props: StarProps) => {
 				[null, { dx: pan.x, dy: pan.y }],
 				{ useNativeDriver: false }
 			),
-			onPanResponderRelease: () => {
+			onPanResponderRelease: async () => {
 				pan.flattenOffset();
 				const newPosition = {
 					x: pan.x._value,
 					y: pan.y._value
 				};
 				setPosition(newPosition);
-				storage.set(`star_${id}`, JSON.stringify(newPosition));
+				await updateDreamPositionApi(id, {
+					initialX: newPosition.x,
+					initialY: newPosition.y,
+				}).then(() => {
+					console.log('position updated');
+				});
 			},
 		})
 	).current;

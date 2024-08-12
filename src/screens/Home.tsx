@@ -1,168 +1,154 @@
-// Home.tsx
-import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import {
+	StyleSheet,
+	Dimensions,
+	View,
+	Image,
+} from 'react-native';
+import React, { useState, useRef, useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import Modal from 'react-native-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { storage } from '../utils/mmkvConfig';
-import Star from '../components/common/star';
-import VideoBackground from '../components/Home/VideBackground';
+import PagerView from 'react-native-pager-view';
+import { Star } from '../assets/icons';
+import ZoomableImage from '../components/common/ZoomableImage';
+import { IDream } from '../types/IDream';
+import { getDreamsApi, startImageCreationApi } from '../api/requests/dreams.api';
+import { DreamImageStatus } from '../constants/dream-image-status';
+import { useFocusEffect } from '@react-navigation/native';
+import Video, { VideoRef } from 'react-native-video';
 import DreamModal from '../components/common/DreamModal';
 
-const dreamMockData = [
-	{
-		id: 1,
-		color: "#A8E7A6",
-		initialX: 29.91,
-		initialY: 118.06,
-		date: '03.25.24',
-		dreamTitle: 'Flying Whale',
-		dreamDescription: 'I saw a giant whale flying over an ocean. As the whale rose towards the sky, it disappeared among colorful clouds.',
-		interpretation: 'The dream suggests that you are feeling free and independent. You are ready to explore new possibilities and take risks.',
-		type: "Lucid"
-	},
-	{
-		id: 2,
-		color: "#FFA666",
-		initialX: 265.08,
-		initialY: 89.39,
-		date: '08.02.24',
-		dreamTitle: 'Lost City',
-		dreamDescription: 'I was wandering through a ruined city. Among the abandoned buildings, I saw old friends, but they couldnt call out to me.',
-		interpretation: 'The dream may indicate that you are feeling disconnected from your past. You may be longing for the comfort of familiar faces.',
-		type: "Nightmare"
-	},
-	{
-		id: 3,
-		color: "white",
-		initialX: 137.83,
-		initialY: 76.46,
-		date: '01.12.24',
-		dreamTitle: "Cats' Party",
-		dreamDescription: "I attended a party full of cats in a park. Each cat was wearing a costume, and they were all dancing.",
-		interpretation: "The dream may suggest that you are feeling playful and carefree. You are enjoying the company of others and embracing your inner child.",
-		type: "Dream"
-	},
-	{
-		id: 4,
-		color: "#FFA666",
-		initialX: 82.58,
-		initialY: 205.86,
-		date: '06.10.24',
-		dreamTitle: "Floating Island",
-		dreamDescription: "A magnificent island was slowly moving over the sea. The island had a forest full of colorful flowers.",
-		interpretation: "The dream may indicate that you are feeling disconnected from reality. You may be seeking a sense of stability and security.",
-		type: "Lucid"
-	},
-	{
-		id: 5,
-		color: "#84D8FA",
-		initialX: 205.41,
-		initialY: 158.53,
-		date: '08.11.24',
-		dreamTitle: "Endless Staircase",
-		dreamDescription: "I was climbing a seemingly endless staircase. Each step revealed a different view.",
-		interpretation: "The dream may suggest that you are facing challenges in your life. You are determined to overcome obstacles and reach new heights.",
-		type: "Dream"
-	},
-	{
-		id: 6,
-		color: "#FFA666",
-		initialX: 145.58,
-		initialY: 265.86,
-		date: '07.14.24',
-		dreamTitle: "Talking Trees",
-		dreamDescription: "I walked through a forest where trees could talk. Each tree had a different story to tell.",
-		interpretation: "The dream may indicate that you are seeking wisdom and guidance. You are open to new ideas and perspectives.",
-		type: "Dream"
-	},
-	{
-		id: 7,
-		color: "#84D8FA",
-		initialX: 255.41,
-		initialY: 208.53,
-		date: '09.21.24',
-		dreamTitle: "Time Travel",
-		dreamDescription: "I traveled back in time and visited ancient civilizations. It was fascinating to see history unfold.",
-		interpretation: "The dream may suggest that you are reflecting on your past. You are exploring your roots and seeking a deeper understanding of yourself.",
-		type: "Lucid"
-	},
-];
-
-
+const { width, height } = Dimensions.get('window');
 
 const Home = () => {
-    const starSize = 6;
-    const [animatingStar, setAnimatingStar] = useState<number | null>(null);
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [rate, setRate] = useState(1);
-    const [selectedStar, setSelectedStar] = useState(dreamMockData[0]);
+	const starSize = 6;
+	const [rate, setRate] = useState(1);
+	const [dreams, setDreams] = useState<IDream[]>([]);
+	const [imagePending, setImagePending] = useState(false);
+	const videoRef = useRef<VideoRef>(null);
+	const [isModalVisible, setModalVisible] = useState(false);
+	const [selectedDream, setSelectedDream] = useState<IDream | null>(null);
+	const [animatingStar, setAnimatingStar] = useState<string | null>(null);
 
-    const [stars, setStars] = useState(dreamMockData);
+	const getRandomColor = () => {
+		const colors = ['#FFA666', '#A8E7A6', '#84D8FA', '#FFA666', 'white', '#8EDCFC', '#F5F5F5'];
+		const randomIndex = Math.floor(Math.random() * colors.length);
 
-    useEffect(() => {
-        const loadedStars = stars.map(star => {
-            const savedPosition = storage.getString(`star_${star.id}`);
-            if (savedPosition) {
-                const { x, y } = JSON.parse(savedPosition);
-                return { ...star, initialX: x, initialY: y };
-            }
-            return star;
-        });
-        setStars(loadedStars);
-    }, []);
+		return colors[randomIndex];
+	}
 
-    const handleStarPress = (id: number) => {
-        setAnimatingStar(id);
-        setRate(3);
-        const selected = stars.find(star => star.id === id);
-        if (selected) {
-            setSelectedStar(selected);
-        }
-    };
-    const handleAnimationComplete = () => {
-        if (animatingStar !== null) {
-            setRate(1);
-            setModalVisible(true);
-            setAnimatingStar(null);
-        }
-    };
 
-    storage.clearAll()
+	useFocusEffect(
+		useCallback(() => {
+			getDreamsApi().then((response) => {
+				setDreams(response);
+			});
+		}, [])
+	);
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-        setRate(1);
-    };
+	const handleStarPress = async (dream: IDream) => {
+		console.log('dream', dream.imageStatus);
+		/* if (selectedDream?.imageStatus === DreamImageStatus.done) {
+			setImagePending(false);
+		} else if (selectedDream?.imageStatus === DreamImageStatus.waiting) {
+			await startImageCreationApi(dream.id);
+			return;
+		} */
+		setImagePending(true);
+		setSelectedDream(dream);
+		setAnimatingStar(dream.id);
+		setRate(3);
+	};
 
-    return (
-        <GestureHandlerRootView style={{ flex: 1, zIndex: 99 }}>
-            <LinearGradient
-                colors={['#000000', '#0C0C0C', '#121212']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.container}
-            >
-                {/* <VideoBackground source={require('../assets/sky.mp4')} paused={isModalVisible} rate={rate} /> */}
-                {stars.map((star) => (
-                    <Star
-                        key={star.id}
-                        id={star.id}
-                        size={starSize}
-                        color={star.color}
-                        date={star.date}
-                        onPress={() => handleStarPress(star.id)}
-                        isAnimating={animatingStar === star.id}
-                        initialX={star.initialX}
-                        initialY={star.initialY}
-                        onAnimComplete={handleAnimationComplete}
-                    />
-                ))}
-                <View style={{ width: '90%', height: 58, aspectRatio: 1, borderTopRightRadius: 10, borderTopLeftRadius: 10, backgroundColor: '#1F1F1F', position: 'absolute', borderBottomWidth: 1, borderColor: 'rgba(255,255,255,0.09)', }} />
-                <Image source={require('../assets/showingStars.png')} style={{ width: 230, height: 265, resizeMode: 'contain' }} />
-                <DreamModal isVisible={isModalVisible} toggleModal={toggleModal} selectedStar={selectedStar} />
-            </LinearGradient>
-        </GestureHandlerRootView>
-    );
+	const handleAnimationComplete = () => {
+		if (animatingStar !== null) {
+			setRate(1);
+			setModalVisible(true);
+			setAnimatingStar(null);
+		}
+	};
+	const toggleModal = () => {
+		setModalVisible(!isModalVisible);
+		setRate(1);
+	};
+
+	return (
+		<GestureHandlerRootView style={{ flex: 1, zIndex: 99 }}>
+			<LinearGradient
+				colors={['#000000', '#0C0C0C', '#121212']}
+				start={{ x: 0, y: 0 }}
+				end={{ x: 0, y: 1 }}
+				style={styles.container}>
+				{/*<Video
+					source={require('../assets/sky.mp4')}
+					style={styles.backgroundVideo}
+					resizeMode="cover"
+					repeat
+					paused={isModalVisible}
+					ref={videoRef}
+					rate={rate}
+					onEnd={() => {
+						if (videoRef.current && !isModalVisible) {
+						videoRef.current.seek(0);
+						}
+					}}
+					/>*/}
+				{dreams.map(star => (
+					<Star
+						key={star.id}
+						id={star.id}
+						size={starSize}
+						color={getRandomColor()}
+						date={star.date}
+						onPress={() => handleStarPress(star)}
+						isAnimating={animatingStar === star.id}
+						initialX={star.initialX}
+						initialY={star.initialY}
+						onAnimComplete={handleAnimationComplete}
+					/>
+				))}
+				<View
+					style={{
+						width: '90%',
+						height: 58,
+						aspectRatio: 1,
+						borderTopRightRadius: 10,
+						borderTopLeftRadius: 10,
+						backgroundColor: '#1F1F1F',
+						position: 'absolute',
+						borderBottomWidth: 1,
+						borderColor: 'rgba(255,255,255,0.09)',
+					}}
+				/>
+				<Image
+					source={require('../assets/showingStars.png')}
+					style={{ width: 230, height: 265, resizeMode: 'contain' }}
+				/>
+				<DreamModal isVisible={isModalVisible} toggleModal={toggleModal} selectedStar={selectedDream} />
+{/* 				<Modal
+					isVisible={isModalVisible}
+					onBackdropPress={toggleModal}
+					animationIn="wobble"
+					style={{ justifyContent: 'center', alignItems: 'center' }}>
+					<View style={styles.modalContent}>
+						<PagerView
+							style={styles.pagerView}
+							orientation="horizontal"
+							transitionStyle="curl"
+							initialPage={0}
+							showPageIndicator={true}
+							scrollEnabled={true}>
+							{selectedDream?.images.map((image, index) => (
+								<View key={index}>
+									<ZoomableImage imageUrl={`http://192.168.1.107:9000/${image.image}`} />
+								</View>
+							))}
+						</PagerView>
+					</View>
+				</Modal> */}
+			</LinearGradient>
+		</GestureHandlerRootView>
+	);
 };
 
 export default Home;
@@ -172,5 +158,33 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-end',
-    }
+    },
+	pagerView: {
+		width: '100%',
+		height: '100%',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	
+	backgroundVideo: {
+		...StyleSheet.absoluteFillObject,
+	},
+	svgContainer: {
+		position: 'absolute',
+		bottom: 0,
+		alignSelf: 'center',
+	},
+	modalContent: {
+		width: width,
+		height: height * 0.55,
+		padding: 20,
+		borderRadius: 10,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	modalText: {
+		fontSize: 18,
+		color: 'white',
+		fontFamily: 'Outfit-Regular',
+	},
 });

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Eye, Rain, Sun } from '../../../assets/icons';
+import { DreamType } from '../../../constants/dream-types';
+
 
 const { width } = Dimensions.get('window');
 
 interface DreamTypeSelectorProps {
-    selectedType: string | null;
-    handleSelection: (type: string) => void;
+    selectedType: DreamType | null;
+    handleSelection: (type: DreamType) => void;
 }
 
 const DreamTypeSelector = ({ selectedType, handleSelection }: DreamTypeSelectorProps) => {
@@ -14,25 +16,25 @@ const DreamTypeSelector = ({ selectedType, handleSelection }: DreamTypeSelectorP
         <View>
             <View style={styles.typeContainer}>
                 <TouchableOpacity
-                    style={[styles.button, selectedType === 'dream' && styles.selectedButton]}
-                    onPress={() => handleSelection('dream')}
+                    style={[styles.button, selectedType === DreamType.DREAM && styles.selectedButton]}
+                    onPress={() => handleSelection(DreamType.DREAM)}
                 >
-                    <Sun size={width * 0.1} color={selectedType === 'dream' ? '#fff' : 'rgba(255,255,255,0.5)'} />
-                    <Text style={[styles.text, selectedType === 'dream' && styles.selectedText]}>Dream</Text>
+                    <Sun size={width * 0.1} color={selectedType === DreamType.DREAM ? '#fff' : 'rgba(255,255,255,0.5)'} />
+                    <Text style={[styles.text, selectedType === DreamType.DREAM && styles.selectedText]}>Dream</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.button, selectedType === 'nightmare' && styles.selectedButton]}
-                    onPress={() => handleSelection('nightmare')}
+                    style={[styles.button, selectedType === DreamType.NIGHTMARE && styles.selectedButton]}
+                    onPress={() => handleSelection(DreamType.NIGHTMARE)}
                 >
-                    <Rain size={width * 0.1} color={selectedType === 'nightmare' ? '#fff' : 'rgba(255,255,255,0.5)'} />
-                    <Text style={[styles.text, selectedType === 'nightmare' && styles.selectedText]}>Nightmare</Text>
+                    <Rain size={width * 0.1} color={selectedType === DreamType.NIGHTMARE ? '#fff' : 'rgba(255,255,255,0.5)'} />
+                    <Text style={[styles.text, selectedType === DreamType.NIGHTMARE && styles.selectedText]}>Nightmare</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.button, selectedType === 'lucid' && styles.selectedButton]}
-                    onPress={() => handleSelection('lucid')}
+                    style={[styles.button, selectedType === DreamType.LUCID && styles.selectedButton]}
+                    onPress={() => handleSelection(DreamType.LUCID)}
                 >
-                    <Eye size={width * 0.1} color={selectedType === 'lucid' ? '#fff' : 'rgba(255,255,255,0.5)'} />
-                    <Text style={[styles.text, selectedType === 'lucid' && styles.selectedText]}>Lucid</Text>
+                    <Eye size={width * 0.1} color={selectedType === DreamType.LUCID ? '#fff' : 'rgba(255,255,255,0.5)'} />
+                    <Text style={[styles.text, selectedType === DreamType.LUCID && styles.selectedText]}>Lucid</Text>
                 </TouchableOpacity>
             </View>
         </View>

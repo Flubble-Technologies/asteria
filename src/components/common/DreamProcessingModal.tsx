@@ -3,51 +3,44 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
 import Modal from 'react-native-modal';
 import { Tick } from '../../assets/icons';
+import { UUID } from '../../..';
+import { DreamImageStatus } from '../../constants/dream-image-status';
+import { getImageForDreamApi } from '../../api/requests/dreams.api';
 
 const { width } = Dimensions.get('window');
 
 interface DreamProcessingModalProps {
 	isVisible: boolean;
 	onClose: () => void;
+	isLoading?: boolean;
+	dreamId: UUID | null;
+	currentPhase: 'interpreting' | 'cartoonizing' | 'completed';
+	setCurrentPhase: (phase: 'interpreting' | 'cartoonizing' | 'completed') => void;
 }
 
-const DreamProcessingModal = ({ isVisible, onClose }: DreamProcessingModalProps) => {
-	const [currentPhase, setCurrentPhase] = useState('interpreting');
+const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCurrentPhase } : DreamProcessingModalProps) => {
 	const [progress, setProgress] = useState(0);
-	const [canProceed, setCanProceed] = useState(false);
 
 	useEffect(() => {
-		if (currentPhase === 'interpreting') {
-			const interval = setInterval(() => {
-				setProgress((prevProgress) => {
-					if (prevProgress < 4) {
-						return prevProgress + 1;
-					} else {
-						clearInterval(interval);
-						setCanProceed(true);
-						return prevProgress;
-					}
-				});
-			}, 1000);
-		} else if (currentPhase === 'cartoonizing') {
-			const interval = setInterval(() => {
-				setProgress((prevProgress) => {
-					if (prevProgress < 4) {
-						return prevProgress + 1;
-					} else {
-						clearInterval(interval);
-						return prevProgress;
-					}
-				});
-			}, 1000);
-		}
-	}, [currentPhase]);
+		let interval: NodeJS.Timeout;
 
-	const handleStartCartoonizing = () => {
-		setCurrentPhase('cartoonizing');
-		setProgress(0); // Reset progress for cartoonizing phase
-		setCanProceed(false); // Reset canProceed for next phase
-	};
+		if (dreamId && currentPhase === 'cartoonizing') {
+			interval = setInterval(async () => {
+				const imageUrls = await getImageForDreamApi(dreamId);
+
+				if (imageUrls.length > 0) {
+					setProgress(imageUrls.length);
+
+					if (imageUrls.length >= 4) {
+						setCurrentPhase('completed');
+						clearInterval(interval);
+					}
+				}
+			}, 5000); // Check every 5 seconds
+		}
+
+		return () => clearInterval(interval);
+	}, [dreamId, currentPhase]);
 
 	const renderPageIndicator = () => {
 		const steps = ['interpreting', 'cartoonizing'];
@@ -80,53 +73,33 @@ const DreamProcessingModal = ({ isVisible, onClose }: DreamProcessingModalProps)
 						<Text style={styles.phaseText}>Your dream is being interpreted...</Text>
 						<LottieView source={require('../../assets/interpretingLottie.json')} autoPlay loop={true} style={{ padding: 110 }} />
 						{renderPageIndicator()}
-
-						<TouchableOpacity
-							style={[styles.nextButton, { opacity: canProceed ? 1 : 0.5 }]}
-							onPress={handleStartCartoonizing}
-							disabled={!canProceed}
-						>
-							<Text style={styles.nextButtonText}>{canProceed ? 'Next' : 'Processing...'}</Text>
-						</TouchableOpacity>
 					</View>
 				) : (
 					<View style={styles.phaseContainer}>
-						<View style={styles.completedContainer}>
-							<Text style={styles.completedText}>Dream interpretation completed</Text>
-							<Tick size={width * 0.055} color='#fff' />
-						</View>
-						{
-							progress === 4 ?
-								<>
-									<View style={styles.completedContainer}>
-										<Text style={styles.completedText}>Dream cartoonization completed</Text>
-										<Tick size={width * 0.055} color='#fff' />
-									</View>
-									<TouchableOpacity
-										style={[styles.closeButton, { opacity: progress >= 4 ? 1 : 0.5 }]}
-										onPress={onClose}
-										disabled={progress < 4}
-									>
-										<Text style={styles.closeButtonText}>
-											{progress < 4 ? 'Processing...' : 'Close'}
-										</Text>
-									</TouchableOpacity>
-								</>
-								: (
-									<>
-										<Text style={styles.phaseText}>Now your dream is being cartoonized...</Text>
-										<LottieView source={require('../../assets/drawingLottie3.json')} autoPlay loop={true} style={{ padding: 110 }} />
-										{renderPageIndicator()}
-										<Text style={styles.progressText}>{progress}/4 images completed</Text>
-										<View style={styles.progressBarContainer}>
-											<View style={[styles.progressBar, { width: `${(progress / 4) * 100}%` }]} />
-										</View>
-									</>
-								)
-						}
+						{currentPhase === 'completed' ? (
+							<View style={styles.completedContainer}>
+								<Text style={styles.completedText}>Dream processing completed</Text>
+								<Tick size={width * 0.055} color='#fff' />
+								<TouchableOpacity
+									style={styles.closeButton}
+									onPress={onClose}
+								>
+									<Text style={styles.closeButtonText}>Close</Text>
+								</TouchableOpacity>
+							</View>
+						) : (
+							<>
+								<Text style={styles.phaseText}>Now your dream is being cartoonized...</Text>
+								<LottieView source={require('../../assets/drawingLottie3.json')} autoPlay loop={true} style={{ padding: 110 }} />
+								{renderPageIndicator()}
+								<Text style={styles.progressText}>{progress}/4 images completed</Text>
+								<View style={styles.progressBarContainer}>
+									<View style={[styles.progressBar, { width: `${(progress / 4) * 100}%` }]} />
+								</View>
+							</>
+						)}
 					</View>
 				)}
-
 				<SafeAreaView />
 			</View>
 		</Modal>

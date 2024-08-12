@@ -1,44 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, View, ActivityIndicator, Animated, TouchableOpacity } from 'react-native';
+import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, View, ActivityIndicator, Animated, TouchableOpacity, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ArrowLeft, Loop } from '../assets/icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList } from '../types/navigation';
+import { AppStackParamList, AsteriaChatProps } from '../types/navigation';
+import { analyzeDreamApi } from '../api/requests/dreams.api';
 
 const { width, height } = Dimensions.get('window');
 
-interface AsteriaChatProps {
-    route: {
-        params: {
-            id?: number; // Dream interpretation parameters
-            color?: string;
-            initialX?: number;
-            initialY?: number;
-            date?: string;
-            dreamTitle?: string;
-            dreamDescription?: string;
-            interpretation?: string;
-            type?: string;
-            analysisData?: { // Analysis data
-                title: string;
-                timeFrame: string;
-                results: string;
-            }
-        }
-    }
-}
-
 const AsteriaChat = ({ route }: AsteriaChatProps) => {
-    const { dreamTitle, dreamDescription, interpretation, analysisData } = route.params;
-    console.log("Received Analysis Data:", analysisData);
+    const [error, setError] = useState<string | null>(null);
+    const { dream, selectedCategory, timeFrame } = route.params
+    const [dreamAnalysis, setDreamAnalysis] = useState<string | null>(null);
+    const [analysisData, setAnalysisData] = useState<{ title: string, timeFrame: string, results: string } | null>(null);
 
-    const dynamicIconSize = (dreamTitle || analysisData?.title)?.length * 10.7 || 0;
+    const dynamicIconSize = dream ? dream.title.length * 10.7 : selectedCategory.length * 10.7 //(dream.title || analysisData?.title)?.length * 10.7 || 0;
     const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [interpretationOrResults, setInterpretationOrResults] = useState('');
+    const [seting, setSeting] = useState(false);
     const [loading, setLoading] = useState({
         description: true,
         interpretationOrResults: true
@@ -47,22 +30,35 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
     const slideAnim = useState(new Animated.Value(width))[0];
 
     useEffect(() => {
-        const typeWriter = (
-            text: string,
-            setText: React.Dispatch<React.SetStateAction<string>>,
-            onComplete: () => void,
-            speed = 50
-        ) => {
-            let index = 0;
-            const interval = setInterval(() => {
-                setText((prev) => prev + text.charAt(index));
-                index++;
-                if (index === text.length) {
-                    clearInterval(interval);
-                    onComplete();
-                }
-            }, speed);
-        };
+        if (dream) {
+            return;
+        }
+        analyzeDreamApi({ timeFrame, selectedCategory }).then((data) => {
+            console.log(data);
+            setDreamAnalysis(data);
+        }).catch((err) => {
+            console.log(err);
+            setError(err);
+        });
+    }, [timeFrame, selectedCategory]);
+
+    const typeWriter = (
+        text: string,
+        setText: React.Dispatch<React.SetStateAction<string>>,
+        onComplete: () => void,
+        speed = 10
+    ) => {
+        let index = 0;
+        const interval = setInterval(() => {
+            setText((prev) => prev + text.charAt(index));
+            index++;
+            if (index === text.length) {
+                clearInterval(interval);
+                onComplete();
+            }
+        }, speed);
+    };
+    useEffect(() => {
 
         const timeframeMapping: { [key: string]: string } = {
             'weekly': '7-day',
@@ -71,31 +67,44 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
             'allTime': 'all-time'
         };
 
-        const handleTitle = dreamTitle || `${analysisData?.title} (${timeframeMapping[analysisData?.timeFrame || '']})` || '';
+        const handleTitle = dream ? dream.title : `${selectedCategory} (${timeframeMapping[timeFrame || '']})` || '';
 
-        typeWriter(handleTitle, setTitle, () => {
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 500,
-                useNativeDriver: true,
-            }).start();
+        if (title.length !== handleTitle.length) {
+            typeWriter(handleTitle, setTitle, () => {
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: true,
+                }).start();
 
-            setLoading((prev) => ({ ...prev, description: false }));
+                setLoading((prev) => ({ ...prev, description: false }));
 
-            const analysisDescription = analysisData 
-                ? `Asteria, can you show me the ${timeframeMapping[analysisData.timeFrame]} analysis of my ${analysisData.title}?` 
-                : '';
+            });
+        }
 
-            const handleDescription = dreamDescription || analysisDescription;
-            
+        const handleDescription = dream ? dream.description : `Asteria, can you show me the ${timeframeMapping[timeFrame]} analysis of my ${selectedCategory}?`
+        console.log(handleDescription, description);
+        console.log(handleDescription.length, description.length);
+        if (!seting) {
+            setSeting(true);
             typeWriter(handleDescription, setDescription, () => {
+                setSeting(false);
                 setLoading((prev) => ({ ...prev, interpretationOrResults: false }));
-                const handleInterpretationOrResults = interpretation || analysisData?.results || '';
-                typeWriter(handleInterpretationOrResults, setInterpretationOrResults, () => { }, 30);
-            }, 30);
-        });
+            }, 10);
+        }
+        const handleInterpretationOrResults = dream?.interpretation || dreamAnalysis || '';
+        typeWriter(handleInterpretationOrResults, setInterpretationOrResults, () => { }, 10);
 
-    }, [dreamTitle, analysisData, slideAnim]);
+    }, [dream, slideAnim]);
+
+    useEffect(() => {
+        if (!dreamAnalysis || dream) {
+            return;
+        }
+        typeWriter(dreamAnalysis, setInterpretationOrResults, () => { }, 10);
+
+        
+    }, [dreamAnalysis]);
 
     return (
         <LinearGradient
@@ -110,7 +119,12 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} >
                         <ArrowLeft size={width * 0.06} color="rgba(255,255,255,0.8)" />
                     </TouchableOpacity>
-                    <Text style={styles.headerText}>Asteria AI</Text>
+                    <Text style={[
+                        styles.headerText,
+                        {
+                            marginTop: Platform.OS === 'android' ? 10 : 0,
+                        }
+                    ]}>Asteria AI</Text>
                     <View />
                 </View>
                 <View>
@@ -119,14 +133,16 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
                 </View>
                 <ScrollView style={{ marginTop: 15 }} contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
                     <View style={styles.iconAndTitleContainer}>
-                        <Text style={styles.dreamTitle}>{dreamTitle ? 'Dream interpretation of' : 'Analysis Results for'}</Text>
-                        {dreamTitle !== undefined ?
+                        <Text style={styles.dreamTitle}>{dream?.title ? 'Dream interpretation of' : 'Analysis Results for'}</Text>
+                        {dream ?
                             <View style={{ marginLeft: 5, position: 'relative' }}>
                                 <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
                                     <Loop size={dynamicIconSize} color="#7E57C2" />
                                 </Animated.View>
                                 <Text style={[styles.dreamTitle, { position: 'absolute', top: 32, left: 9, fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{title}</Text>
-                            </View> : <Text style={[styles.dreamTitle, {paddingVertical: 15,  fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{" "}{title}</Text>
+                            </View>
+                            :
+                            <Text style={[styles.dreamTitle, { paddingVertical: 15, fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{" "}{title}</Text>
                         }
                     </View>
                     <View style={styles.bubbleRight}>

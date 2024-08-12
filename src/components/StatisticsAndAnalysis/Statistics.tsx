@@ -1,16 +1,19 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Alert } from 'react-native';
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { Sleeping } from '../../assets/icons';
+import { ChartComponent } from '../common/ChartComponent';
+import { ChartData } from 'react-native-chart-kit/dist/HelperTypes';
+import { GestureResponderEvent } from 'react-native-modal';
 
 const { width } = Dimensions.get('window');
 
 interface StatisticsProps {
     totalDreamsCount: number;
-    getDreamFrequencyData: () => object;
+    getDreamFrequencyData: () => ChartData;
     dreamsPieData: object[];
     emotionsPieData: object[];
-    recurringElementsBarData: object;
+    recurringElementsBarData: ChartData;
 }
 
 const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, emotionsPieData, recurringElementsBarData }: StatisticsProps) => {
@@ -55,6 +58,8 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                     fillShadowGradient: '#7E57C2',
                     fillShadowGradientOpacity: 1,
                 }}
+                yAxisLabel=''
+                yAxisSuffix=''
                 fromZero
                 showBarTops={true}
                 style={[styles.chart, { marginLeft: -25 }]}
@@ -84,13 +89,27 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
             <Text style={styles.chartTitle}>Recurring Elements</Text>
             <BarChart
                 data={recurringElementsBarData}
-                width={width - 40}
+                width={width}
                 height={220}
+                yAxisLabel=''
+                yAxisSuffix=''
+
                 chartConfig={{
                     ...chartConfig,
                     fillShadowGradient: '#7E57C2',
                     fillShadowGradientOpacity: 1,
+                    propsForVerticalLabels: {
+                        onPress: (event: any) => {
+                            console.log(event.target._internalFiberInstanceHandleDEV.memoizedProps.content);
+                            Alert.alert('Element', event.target._internalFiberInstanceHandleDEV.memoizedProps.content);
+                        },
+                        dy: 2.5,
+                        dx: -5,
+                        fontSize: 13
+                    },
+                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 }}
+                verticalLabelRotation={-90}
                 fromZero
                 showBarTops={true}
                 style={[styles.chart, { marginLeft: -25 }]}
@@ -127,6 +146,7 @@ const styles = StyleSheet.create({
     chart: {
         marginVertical: 8,
         borderRadius: 16,
+        marginLeft: -35
     },
     chartTitle: {
         color: 'rgba(255,255,255,0.85)',

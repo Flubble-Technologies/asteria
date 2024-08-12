@@ -1,8 +1,9 @@
 import React from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { DreamAnalysisCategories } from '../../constants/dream-analysis-categories';
+import { TimeFrame } from '../../constants/time-frame';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { AppStackParamList } from '../../types/navigation';
 
 const { width, height } = Dimensions.get('window');
@@ -14,21 +15,21 @@ interface AnalysisProps {
 const mockData = [
     {
         id: 1,
-        title: 'Emotional State Analysis',
+        title: DreamAnalysisCategories.EmotionalStateAnalysis,//'Emotional State Analysis',
         subtitle: 'Understanding your emotional fluctuations',
         image: require('../../assets/analysis/emotional/emotional4.png'),
         colors: ['#F67945', '#F78353', '#F89C75']
     },
     {
         id: 2,
-        title: "Psychological State Analysis",
+        title: DreamAnalysisCategories.PsychologicalSituationAndThemes,//"Psychological State Analysis",
         subtitle: "Insights into your mental health",
         image: require('../../assets/analysis/psychological/psychological1.png'),
         colors: ["#76B852", "#80BF5F", "#90C872"]
     },
     {
         id: 3,
-        title: 'Stress and Anxiety Analysis',
+        title: DreamAnalysisCategories.StressAndAnxietyLevels,//'Stress and Anxiety Analysis',
         subtitle: 'Evaluating stress and anxiety levels',
         image: require('../../assets/analysis/stressAndAnxiety/stressAndAnxiety2.png'),
         colors: ['#7E57C2', '#8D6CC6', '#997DCA']
@@ -36,32 +37,32 @@ const mockData = [
     },
     {
         id: 4,
-        title: 'Sleep Quality and Dream Relationship',
+        title: DreamAnalysisCategories.RelationshipBetweenSleepQualityAndDreams,//'Sleep Quality and Dream Relationship',
         subtitle: 'Linking sleep patterns to dream quality',
         image: require('../../assets/analysis/sleepQuality/sleepQuality2.png'),
         colors: ['#4A90E2', '#599BE7', '#81B7F5']
     },
     {
         id: 5,
-        title: 'Subconscious Needs and Goals',
+        title: DreamAnalysisCategories.SubconsciousNeedsAndGoals,//'Subconscious Needs and Goals',
         subtitle: 'Exploring your hidden desires and objectives.',
         image: require('../../assets/analysis/subconscious/subconscious2.png'),
         colors: ['#EE3B3B', '#F24D4D', '#F76565']
     }
 ];
 
-const Analysis = ({ selectedTimeFrame }: AnalysisProps) => {
-    const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+interface AnalysisProps {
+    timeFrame: TimeFrame;
+}
 
-    const handleAnalysisPress = (analysisTitle: string) => {
-        console.log("Selected TimeFrame:", selectedTimeFrame);
-        const mockAnalysisData = {
-            title: analysisTitle,
-            timeFrame: selectedTimeFrame,
-            results: 'This is a mock analysis result based on the selected time frame and analysis type.'
-        };
-        navigation.navigate('AsteriaChat', { analysisData: mockAnalysisData });
-    };;
+const Analysis = ({ timeFrame }: AnalysisProps) => {
+
+    const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+
+    const handleAnalysisPress = (title: DreamAnalysisCategories) => {
+        navigation.navigate('AsteriaChat', { selectedCategory: title, timeFrame, dream: null });
+    }
+
 
     return (
         <FlatList

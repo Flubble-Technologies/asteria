@@ -9,16 +9,24 @@ import TruncatableText from './TruncatableText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../types/navigation';
+import { IDream } from '../../types/IDream';
+import { DreamAnalysisCategories } from '../../constants/dream-analysis-categories';
+import { TimeFrame } from '../../constants/time-frame';
 
 const { width, height } = Dimensions.get('window');
 
 interface DreamModalProps {
     isVisible: boolean;
     toggleModal: () => void;
-    selectedStar: any;
+    selectedStar: IDream | null;
 }
 
 const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) => {
+
+    if (!selectedStar) {
+        return null;
+    }
+
     const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
     return (
         <Modal
@@ -33,32 +41,25 @@ const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) =
                     transitionStyle='curl'
                     initialPage={0}
                     scrollEnabled={true}>
-                    <View key="1">
-                        <ZoomableImage imageUrl={require('../../assets/cartoons/cartoon3.png')} />
-                    </View>
-                    <View key="2">
-                        <ZoomableImage imageUrl={require('../../assets/cartoons/cartoon4.png')} />
-                    </View>
-                    <View key="3">
-                        <ZoomableImage imageUrl={require('../../assets/cartoons/cartoon5.png')} />
-                    </View>
-                    <View key="4">
-                        <ZoomableImage imageUrl={require('../../assets/cartoons/cartoon6.png')} />
-                    </View>
+                    {selectedStar?.images.map((image, index) => (
+                        <View key={index}>
+                            <ZoomableImage imageUrl={`http://192.168.1.107:9000/${image.image}`} />
+                        </View>
+                    ))}
                 </PagerView>
                 <View style={styles.dateBackground} pointerEvents="none">
                     <Text style={styles.dateText}>{selectedStar.date}</Text>
                 </View>
                 <View style={styles.dreamDescriptionBackground} pointerEvents='none'>
                     <Text style={styles.dreamTitle}>
-                        {selectedStar.dreamTitle}
+                        {selectedStar.title}
                     </Text>
-                    <TruncatableText text={selectedStar.dreamDescription} limit={140} />
+                    <TruncatableText text={selectedStar.description} limit={140} />
                 </View>
             </View>
             <TouchableOpacity style={styles.button} onPress={() => {
                 toggleModal();
-                navigation.navigate('AsteriaChat', selectedStar)
+                navigation.navigate('AsteriaChat', {dream: selectedStar, selectedCategory: DreamAnalysisCategories.EmotionalStateAnalysis, timeFrame: TimeFrame.weekly});
             }}>
                 <Star2 size={width * 0.04} color="#fff" />
                 <Text style={styles.buttonText}>Dream Interpretation with Asteria</Text>

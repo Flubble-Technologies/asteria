@@ -1,21 +1,15 @@
 import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { Eye, Rain, Sun } from '../../assets/icons';
+import { DreamType } from '../../constants/dream-types';
+import { IDream } from '../../types/IDream';
 
 const { width } = Dimensions.get('window');
 
 interface DiaryItemProps {
-    item: {
-        id: number;
-        color: string;
-        initialX: number;
-        initialY: number;
-        date: string;
-        dreamTitle: string;
-        dreamDescription: string;
-        type: string;
-    };
-    toggleModal: (item: any) => void;
+    item: IDream;
+    index: number;
+    toggleModal: (item: IDream) => void;
 }
 
 const backgroundImages = [
@@ -28,18 +22,22 @@ const backgroundImages = [
     require('../../assets/skies/sky7.jpg'),
 ];
 
-const chooseIcon = (type: string) => {
-    if (type === 'Dream') {
+const chooseIcon = (type: DreamType) => {
+    if (type === DreamType.DREAM) {
         return <Sun size={width * 0.055} color='rgba(255,255,255,0.8)' />;
-    } else if (type === 'Nightmare') {
+    } else if (type === DreamType.NIGHTMARE) {
         return <Rain size={width * 0.055} color='rgba(255,255,255,0.8)' />;
-    } else if (type === 'Lucid') {
+    } else if (type === DreamType.LUCID) {
         return <Eye size={width * 0.055} color='rgba(255,255,255,0.8)' />;
     }
 }
 
-const DiaryItem = ({ item, toggleModal }: DiaryItemProps) => {
-    const backgroundImage = backgroundImages[item.id % backgroundImages.length];
+const DiaryItem = ({ item, toggleModal, index }: DiaryItemProps) => {
+    const backgroundImage = backgroundImages[index % backgroundImages.length];
+
+    if (!item) {
+        return null;
+    }
 
     return (
         <TouchableOpacity style={styles.touchable} onPress={() => toggleModal(item)}>
@@ -60,7 +58,7 @@ const DiaryItem = ({ item, toggleModal }: DiaryItemProps) => {
                         </View>
                     </View>
                     <Text style={styles.nameText}>
-                        {item.dreamTitle}
+                        {item.title}
                     </Text>
                 </View>
             </ImageBackground>

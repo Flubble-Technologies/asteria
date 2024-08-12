@@ -1,15 +1,24 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Notification, Profile } from '../../assets/icons';
 import ArrowRight from '../../assets/icons/arrowRight';
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { requestNotificationPermission } from '../../utils/notification-permission';
 
 const { width } = Dimensions.get('window');
 
 const ManagementButtons = () => {
     const [isEnabled, setIsEnabled] = useState(false);
+    const navigation = useNavigation<any>();
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
+    useEffect(() => {
+        requestNotificationPermission().then(() => {
+            setIsEnabled(true);
+        });
+    }, [isEnabled]);
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -28,7 +37,7 @@ const ManagementButtons = () => {
                 />
             </View>
             <View style={styles.separator} />
-            <TouchableOpacity style={styles.row}>
+            <TouchableOpacity style={styles.row} onPress={() => navigation.navigate('UpdateProfile')}>
                 <View style={styles.iconTextContainer}>
                     <View style={styles.iconBackground}>
                         <Profile size={width * 0.04} color='#fff' />

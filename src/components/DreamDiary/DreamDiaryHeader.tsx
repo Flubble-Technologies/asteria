@@ -1,37 +1,51 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { Search } from '../../assets/icons';
+import { DreamType } from '../../constants/dream-types';
 
 const { width } = Dimensions.get('window');
 
-const DreamDiaryHeader = () => {
-    const [selectedType, setSelectedType] = useState('All');
-    const [searchVisible, setSearchVisible] = useState(false);
+
+interface DreamDiaryHeaderProps {
+    searchVisible: boolean
+    selectedType: DreamType | null
+    setSearchVisible: (visible: boolean) => void
+    setSelectedType: (type: DreamType | null) => void
+    searchTextInput: string
+    setSearchTextInput: (text: string) => void
+}
+
+const DreamDiaryHeader = ({ searchVisible, selectedType, setSelectedType, setSearchVisible, searchTextInput, setSearchTextInput }: DreamDiaryHeaderProps) => {
+
 
     return (
         <>
-            <Text style={styles.text}>Dream Diary</Text>
+            <Text style={
+                [styles.text, {
+                    marginTop: Platform.OS === 'android' ? 10 : 0,
+                }]
+                }>Dream Diary</Text>
             <ScrollView horizontal={true} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <TouchableOpacity style={[styles.searchButton, searchVisible && styles.selectedButton]} onPress={() => setSearchVisible(!searchVisible)}>
                     <Search size={width * 0.05} color='rgba(255,255,255,1)' />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.tabButton, selectedType === 'All' && styles.selectedButton]} onPress={() => setSelectedType('All')}>
-                    <Text style={[styles.buttonText, selectedType === 'All' && styles.selectedButtonText]}>
+                <TouchableOpacity style={[styles.tabButton, selectedType === null && styles.selectedButton]} onPress={() => setSelectedType(null)}>
+                    <Text style={[styles.buttonText, selectedType === null && styles.selectedButtonText]}>
                         All
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.tabButton, selectedType === 'Dream' && styles.selectedButton]} onPress={() => setSelectedType('Dream')} >
-                    <Text style={[styles.buttonText, selectedType === 'Dream' && styles.selectedButtonText]}>
+                <TouchableOpacity style={[styles.tabButton, selectedType === DreamType.DREAM && styles.selectedButton]} onPress={() => setSelectedType(DreamType.DREAM)} >
+                    <Text style={[styles.buttonText, selectedType === DreamType.DREAM && styles.selectedButtonText]}>
                         Dream
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.tabButton, selectedType === 'Nightmare' && styles.selectedButton]} onPress={() => setSelectedType('Nightmare')} >
-                    <Text style={[styles.buttonText, selectedType === 'Nightmare' && styles.selectedButtonText]}>
+                <TouchableOpacity style={[styles.tabButton, selectedType === DreamType.NIGHTMARE && styles.selectedButton]} onPress={() => setSelectedType(DreamType.NIGHTMARE)} >
+                    <Text style={[styles.buttonText, selectedType === DreamType.NIGHTMARE && styles.selectedButtonText]}>
                         Nightmare
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.tabButton, selectedType === 'Lucid' && styles.selectedButton]} onPress={() => setSelectedType('Lucid')}>
-                    <Text style={[styles.buttonText, selectedType === 'Lucid' && styles.selectedButtonText]} >
+                <TouchableOpacity style={[styles.tabButton, selectedType === DreamType.LUCID && styles.selectedButton]} onPress={() => setSelectedType(DreamType.LUCID)}>
+                    <Text style={[styles.buttonText, selectedType === DreamType.LUCID && styles.selectedButtonText]} >
                         Lucid
                     </Text>
                 </TouchableOpacity>
@@ -39,6 +53,8 @@ const DreamDiaryHeader = () => {
             {searchVisible && (
                 <TextInput
                     style={styles.searchInput}
+                    value={searchTextInput}
+                    onChangeText={setSearchTextInput}
                     placeholder="Search in your dreams"
                     placeholderTextColor="rgba(255,255,255,0.4)"
                 />

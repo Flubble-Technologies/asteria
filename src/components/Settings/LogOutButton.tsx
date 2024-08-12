@@ -2,12 +2,16 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import React from 'react'
 import ArrowRight from '../../assets/icons/arrowRight'
 import { LogOut, Question } from '../../assets/icons'
+import { useAuthContext } from '../../context/auth/auth-context'
 
 const { width } = Dimensions.get('window')
 
 const LogOutButton = () => {
+
+    const { logout } = useAuthContext()
+
     return (
-        <TouchableOpacity style={styles.row}>
+        <TouchableOpacity style={styles.row} onPress={() => logout(true)}>
             <View style={styles.iconTextContainer}>
                 <View style={styles.iconBackground}>
                     <LogOut size={width * 0.04} color='#fff' />
