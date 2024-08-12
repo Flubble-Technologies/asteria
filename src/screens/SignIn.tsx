@@ -21,7 +21,7 @@ import LottieView from 'lottie-react-native';
 
 const { width, height } = Dimensions.get('window');
 
-const SignInScreen: React.FC<SignInProps> = ({ navigation }) => {
+const SignIn: React.FC<SignInProps> = ({ navigation }) => {
     const { login } = useAuthContext();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -114,16 +114,14 @@ const SignInScreen: React.FC<SignInProps> = ({ navigation }) => {
                                 <Text style={styles.signUpText}> Sign Up</Text>
                             </TouchableOpacity>
                         </View>
-
                     </View>
                 </ScrollView>
             </LinearGradient>
-
         </View>
     );
 };
 
-export default SignInScreen;
+export default SignIn;
 
 const styles = StyleSheet.create({
     container: {

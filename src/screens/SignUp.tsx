@@ -20,7 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
-const SignUpScreen: React.FC<SignUpProps> = ({ navigation }) => {
+const SignUp: React.FC<SignUpProps> = ({ navigation }) => {
     const { signUp } = useAuthContext();
     const [fullName, setFullName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -146,7 +146,7 @@ const SignUpScreen: React.FC<SignUpProps> = ({ navigation }) => {
     );
 };
 
-export default SignUpScreen;
+export default SignUp;
 
 const styles = StyleSheet.create({
     container: {
