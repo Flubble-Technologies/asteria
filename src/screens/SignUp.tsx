@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
     Dimensions,
+    Image,
     Keyboard,
     SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -14,6 +16,7 @@ import { useAuthContext } from '../context/auth/auth-context';
 import MyShowMessage from '../components/common/MyShowMessage';
 import { ApiErrorType } from '../services/api.service';
 import { errorMessages } from '../types/IErrorMessages';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
@@ -81,55 +84,65 @@ const SignUpScreen: React.FC<SignUpProps> = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Create Account</Text>
-            </View>
-            <View style={styles.body} onTouchStart={() => Keyboard.dismiss()}>
-                <Text style={styles.textInputTitle}>Full Name</Text>
-                <TextInput
-                    value={fullName}
-                    onChangeText={setFullName}
-                    placeholder="Full Name"
-                    autoCapitalize="words"
-                    style={styles.textInput}
-                    textContentType="name"
-                />
-                <Text style={styles.textInputTitle}>Email</Text>
-                <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Email"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    style={styles.textInput}
-                    textContentType="emailAddress"
-                />
-                <Text style={styles.textInputTitle}>Password</Text>
-                <TextInput
-                    value={password}
-                    autoCapitalize="none"
-                    onChangeText={setPassword}
-                    placeholder="Password"
-                    secureTextEntry
-                    style={styles.textInput}
-                    textContentType="password"
-                />
-                <TouchableOpacity
-                    onPress={handleSignUp}
-                    style={styles.signUpButton}
-                    activeOpacity={0.8}
-                >
-                    <Text style={styles.signUpButtonText}>Sign Up</Text>
-                </TouchableOpacity>
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Already have an account?</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                        <Text style={styles.signInText}> Sign In</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </SafeAreaView>
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#000000', '#0C0C0C', '#121212']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.container}>
+                <ScrollView style={{ flex: 1, paddingHorizontal: 25, }} contentContainerStyle={{ flexGrow: 1 }}>
+                    <SafeAreaView />
+                    <Image source={require('../assets/asteriaLogoPurple.png')} style={{ width: width * 0.65, height: width * 0.5, alignSelf: 'center', resizeMode: 'contain' }} />
+                    <Text style={styles.headerText}>Sign Up</Text>
+                    <View style={styles.body} onTouchStart={() => Keyboard.dismiss()}>
+                        <TextInput
+                            value={fullName}
+                            onChangeText={setFullName}
+                            placeholder="Full Name"
+                            autoCapitalize="words"
+                            style={styles.textInput}
+                            textContentType="name"
+                            placeholderTextColor="rgba(255,255,255,0.4)"
+
+                        />
+                        <TextInput
+                            value={email}
+                            onChangeText={setEmail}
+                            placeholder="Email"
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            style={styles.textInput}
+                            textContentType="emailAddress"
+                            placeholderTextColor="rgba(255,255,255,0.4)"
+
+                        />
+                        <TextInput
+                            value={password}
+                            autoCapitalize="none"
+                            onChangeText={setPassword}
+                            placeholder="Password"
+                            secureTextEntry
+                            style={styles.textInput}
+                            textContentType="password"
+                            placeholderTextColor="rgba(255,255,255,0.4)"
+                        />
+                        <TouchableOpacity
+                            onPress={handleSignUp}
+                            style={styles.signUpButton}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.signUpButtonText}>Sign Up</Text>
+                        </TouchableOpacity>
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Already have an account?</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                                <Text style={styles.signInText}> Sign In</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </ScrollView>
+            </LinearGradient>
+        </View>
     );
 };
 
@@ -138,59 +151,48 @@ export default SignUpScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f7f7f7',
-    },
-    header: {
-        flex: 0.2,
-        backgroundColor: '#1F3768',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     headerText: {
         color: '#fff',
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: width * 0.075,
+        fontFamily: 'Outfit-SemiBold',
     },
     body: {
-        flex: 0.8,
-        paddingHorizontal: 25,
-        justifyContent: 'center',
-    },
-    textInputTitle: {
-        marginBottom: 10,
-        color: '#303030',
-        fontFamily: 'Outfit-Medium',
-        fontSize: 18,
+        marginTop: 25,
     },
     textInput: {
-        borderWidth: 1,
-        borderColor: '#ccc',
+        width: '100%',
+        backgroundColor: 'rgba(255,255,255,0.12)',
+        padding: 16,
         borderRadius: 10,
-        padding: 15,
-        marginBottom: 20,
-        backgroundColor: '#fff',
+        color: '#fff',
+        fontSize: width * 0.04,
+        fontFamily: 'Outfit-Medium',
+        marginBottom: 15,
     },
     signUpButton: {
-        backgroundColor: '#1F3768',
+        backgroundColor: '#7E57C2',
         padding: 15,
         borderRadius: 10,
+        marginTop: 10,
         alignItems: 'center',
     },
     signUpButtonText: {
         color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: width * 0.047,
+        fontFamily: 'Outfit-SemiBold',
     },
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 20,
     },
-    footerText: {
-        color: '#303030',
-    },
     signInText: {
-        color: '#1F3768',
-        fontWeight: 'bold',
+        color: '#7E57C2',
+        fontFamily: 'Outfit-Bold',
+    },
+    footerText: {
+        color: 'rgba(255,255,255,0.6)',
+        fontFamily: 'Outfit-Regular',
     },
 });
