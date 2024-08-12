@@ -17,6 +17,7 @@ import { DreamImageStatus } from '../constants/dream-image-status';
 import { useFocusEffect } from '@react-navigation/native';
 import Video, { VideoRef } from 'react-native-video';
 import DreamModal from '../components/common/DreamModal';
+import MyShowMessage from '../components/common/MyShowMessage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,13 +48,14 @@ const Home = () => {
 	);
 
 	const handleStarPress = async (dream: IDream) => {
-		console.log('dream', dream.imageStatus);
-		/* if (selectedDream?.imageStatus === DreamImageStatus.done) {
-			setImagePending(false);
-		} else if (selectedDream?.imageStatus === DreamImageStatus.waiting) {
-			await startImageCreationApi(dream.id);
+		if (dream.images.length < 4) {
+			MyShowMessage({
+				message: 'Dream is not ready yet',
+				type: 'warning',
+				description: 'Please wait for the dream to be ready',
+			});
 			return;
-		} */
+		}
 		setImagePending(true);
 		setSelectedDream(dream);
 		setAnimatingStar(dream.id);
@@ -79,7 +81,7 @@ const Home = () => {
 				start={{ x: 0, y: 0 }}
 				end={{ x: 0, y: 1 }}
 				style={styles.container}>
-				{/*<Video
+				{<Video
 					source={require('../assets/sky.mp4')}
 					style={styles.backgroundVideo}
 					resizeMode="cover"
@@ -89,10 +91,10 @@ const Home = () => {
 					rate={rate}
 					onEnd={() => {
 						if (videoRef.current && !isModalVisible) {
-						videoRef.current.seek(0);
+							videoRef.current.seek(0);
 						}
 					}}
-					/>*/}
+				/>}
 				{dreams.map(star => (
 					<Star
 						key={star.id}
@@ -125,7 +127,7 @@ const Home = () => {
 					style={{ width: 230, height: 265, resizeMode: 'contain' }}
 				/>
 				<DreamModal isVisible={isModalVisible} toggleModal={toggleModal} selectedStar={selectedDream} />
-{/* 				<Modal
+				{/* 				<Modal
 					isVisible={isModalVisible}
 					onBackdropPress={toggleModal}
 					animationIn="wobble"
@@ -154,18 +156,18 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-    },
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+	},
 	pagerView: {
 		width: '100%',
 		height: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	
+
 	backgroundVideo: {
 		...StyleSheet.absoluteFillObject,
 	},

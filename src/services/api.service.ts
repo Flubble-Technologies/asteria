@@ -7,7 +7,7 @@ export const initializeApiService = (logoutCallback: any) => {
     onUnauthorized = logoutCallback;
 };
 
-const API_BASE_URL = 'http://192.168.1.107:4242'//'https://api.valemgo.com.tr' //
+const API_BASE_URL = 'https://asteria.ist';
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
