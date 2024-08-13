@@ -5,6 +5,7 @@ import Modal from 'react-native-modal';
 import { Tick } from '../../assets/icons';
 import { UUID } from '../../..';
 import { getImageForDreamApi } from '../../api/requests/dreams.api';
+import { DreamImageStatus } from '../../constants/dream-image-status';
 
 const { width } = Dimensions.get('window');
 
@@ -19,23 +20,28 @@ interface DreamProcessingModalProps {
 
 const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCurrentPhase }: DreamProcessingModalProps) => {
 	const [progress, setProgress] = useState(0);
+	const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		let interval: NodeJS.Timeout;
 
 		if (dreamId && currentPhase === 'cartoonizing') {
 			interval = setInterval(async () => {
-				const imageUrls = await getImageForDreamApi(dreamId);
+				const response = await getImageForDreamApi(dreamId);
+				const images = response.images;
 
-				if (imageUrls.length > 0) {
-					setProgress(imageUrls.length);
 
-					if (imageUrls.length >= 4) {
+				if (images.length > 0) {
+					setProgress(images.length);
+
+					if (images.length >= 4 || response.status === DreamImageStatus.done) {
 						setCurrentPhase('completed');
 						clearInterval(interval);
 					}
 				}
 			}, 5000); // Check every 5 seconds
+
+			setIntervalId(interval);
 		}
 
 		return () => clearInterval(interval);
@@ -61,7 +67,12 @@ const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCu
 	return (
 		<Modal
 			isVisible={isVisible}
-			onBackdropPress={onClose}
+			onBackdropPress={() => {
+				if (intervalId) {
+					clearInterval(intervalId);
+				}
+				onClose()
+			}}
 			swipeDirection="down"
 			style={styles.modalStyle}
 		>

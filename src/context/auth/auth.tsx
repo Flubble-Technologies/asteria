@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const initialize = useCallback(async function () {
-        console.log('Initializing authentication context...');
+
         try {
             await refreshToken();
             const user = await meApi();

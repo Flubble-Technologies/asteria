@@ -1,5 +1,5 @@
 // ImageModal.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import PagerView from 'react-native-pager-view';
@@ -22,12 +22,25 @@ interface DreamModalProps {
 }
 
 const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) => {
+    const [dreamImages, setDreamImages] = React.useState<string[]>([]);
+    useEffect(() => {
+        if (!selectedStar || !selectedStar.images) {
+            return;
+        }
+        const images = selectedStar.images.sort((a, b) => {
+            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        });
+
+        const urls = images.map(image => image.image)
+        setDreamImages(urls);
+    }, [selectedStar]);
+
+    const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
     if (!selectedStar) {
         return null;
     }
 
-    const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
     return (
         <Modal
             isVisible={isVisible}
@@ -41,9 +54,10 @@ const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) =
                     transitionStyle='curl'
                     initialPage={0}
                     scrollEnabled={true}>
-                    {selectedStar?.images.map((image, index) => (
+                    {dreamImages.map((image, index) => (
                         <View key={index}>
-                            <ZoomableImage imageUrl={`https://856d796f7630.ngrok.app/${image.image}`} />
+                            <ZoomableImage imageUrl={`https://856d796f7630.ngrok.app/${image}`} />
+
                         </View>
                     ))}
                 </PagerView>
@@ -59,7 +73,7 @@ const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) =
             </View>
             <TouchableOpacity style={styles.button} onPress={() => {
                 toggleModal();
-                navigation.navigate('AsteriaChat', {dream: selectedStar, selectedCategory: DreamAnalysisCategories.EmotionalStateAnalysis, timeFrame: TimeFrame.weekly});
+                navigation.navigate('AsteriaChat', { dream: selectedStar, selectedCategory: DreamAnalysisCategories.EmotionalStateAnalysis, timeFrame: TimeFrame.weekly });
             }}>
                 <Star2 size={width * 0.04} color="#fff" />
                 <Text style={styles.buttonText}>Dream Interpretation with Asteria</Text>

@@ -9,7 +9,6 @@ export function AuthConsumer({ children }: Props) {
     return (
         <AuthContext.Consumer>
             {auth => {
-                console.log('Auth context in consumer:', auth);
                 return auth.loading ? <Splash /> : children;
             }}
         </AuthContext.Consumer>

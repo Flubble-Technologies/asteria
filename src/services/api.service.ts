@@ -7,7 +7,7 @@ export const initializeApiService = (logoutCallback: any) => {
     onUnauthorized = logoutCallback;
 };
 
-const API_BASE_URL = 'https://asteria.ist';
+const API_BASE_URL = 'https://asteria.ist'; // 'http://localhost:4242'//
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {

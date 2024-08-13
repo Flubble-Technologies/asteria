@@ -1,5 +1,6 @@
 import { UUID } from "../../..";
 import { DreamAnalysisCategories } from "../../constants/dream-analysis-categories";
+import { DreamImageStatus } from "../../constants/dream-image-status";
 import { TimeFrame } from "../../constants/time-frame";
 import apiService from "../../services/api.service";
 import { ICreateDream } from "../../types/ICreate-dream";
@@ -21,7 +22,12 @@ export async function startImageCreationApi(dreamId: UUID) {
     return await apiService.post(API_ENDPOINTS.dream.addImage(dreamId));
 }
 
-export async function getImageForDreamApi(dreamId: UUID) : Promise<string[]> {
+
+export interface IGetDreamResponse {
+    images: string[];
+    status: DreamImageStatus;
+}
+export async function getImageForDreamApi(dreamId: UUID) : Promise<IGetDreamResponse> {
     return await apiService.get(API_ENDPOINTS.dream.getImage(dreamId));
 }
 

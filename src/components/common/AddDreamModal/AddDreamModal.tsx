@@ -21,6 +21,7 @@ import { DreamType } from '../../../constants/dream-types';
 import { createDreamApi } from '../../../api/requests/dreams.api';
 import MyShowMessage from '../MyShowMessage';
 import { IDream } from '../../../types/IDream';
+import { useDreams } from '../../../context/dream/dream-provider.';
 
 const { height, width } = Dimensions.get('window');
 
@@ -40,7 +41,8 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
     const [selectedType, setSelectedType] = useState<DreamType>(DreamType.DREAM);
     const [currentPhase, setCurrentPhase] = useState<'interpreting' | 'cartoonizing' | 'completed'>('interpreting');
 
-    console.log("type", selectedType)
+    const { refreshDreams } = useDreams();
+
 
     const getRandomXandY = () => {
         const padding = 100;
@@ -48,7 +50,7 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
         const y = Math.floor(Math.random() * (height - padding * 2)) + padding;
         return { x, y };
     }
-    
+
 
     const addDream = () => {
         if (dreamTitle.length === 0 || dreamDescription.length === 0) {
@@ -88,6 +90,7 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
                 setLoading(false);
                 setDreamTitle('');
                 setDreamDescription('');
+                refreshDreams();
             })
             .catch(() => {
                 MyShowMessage({
@@ -103,8 +106,14 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
     return (
         <Modal
             isVisible={openAddDreamModal}
-            onSwipeComplete={toggleModal}
-            onBackdropPress={toggleModal}
+            onSwipeComplete={() => {
+                refreshDreams();
+                toggleModal();
+            }}
+            onBackdropPress={() => {
+                refreshDreams();
+                toggleModal();
+            }}
             swipeDirection="down"
             style={styles.modalStyle}
         >

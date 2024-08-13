@@ -100,7 +100,6 @@ const Statistics = ({ totalDreamsCount, getDreamFrequencyData, dreamsPieData, em
                     fillShadowGradientOpacity: 1,
                     propsForVerticalLabels: {
                         onPress: (event: any) => {
-                            console.log(event.target._internalFiberInstanceHandleDEV.memoizedProps.content);
                             Alert.alert('Element', event.target._internalFiberInstanceHandleDEV.memoizedProps.content);
                         },
                         dy: 2.5,

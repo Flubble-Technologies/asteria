@@ -3,6 +3,7 @@ import { DreamAnalysisCategories } from "../constants/dream-analysis-categories"
 import { AnalysisResultProps } from "../types/navigation";
 import { analyzeDreamApi } from "../api/requests/dreams.api";
 import { Text, View } from "react-native";
+import MyShowMessage from "../components/common/MyShowMessage";
 
 const AnalysisResult = ({ route }: AnalysisResultProps) => {
     const { selectedCategory, timeFrame } = route.params;
@@ -12,10 +13,14 @@ const AnalysisResult = ({ route }: AnalysisResultProps) => {
 
     useEffect(() => {
         analyzeDreamApi({ timeFrame, selectedCategory }).then((data) => {
-            console.log(data);
             setDreamAnalysis(data);
         }).catch((err) => {
-            console.log(err);
+            MyShowMessage({
+                message: 'Error',
+                type: 'danger',
+                description: 'An error occurred while analyzing the dream',
+                duration: 3000,
+            })
             setError(err);
         });
     }, [timeFrame, selectedCategory]);
