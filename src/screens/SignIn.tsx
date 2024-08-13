@@ -18,6 +18,7 @@ import { ApiErrorType } from '../services/api.service';
 import { errorMessages } from '../types/IErrorMessages';
 import LinearGradient from 'react-native-linear-gradient';
 import LottieView from 'lottie-react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const { width, height } = Dimensions.get('window');
 
@@ -75,7 +76,7 @@ const SignIn: React.FC<SignInProps> = ({ navigation }) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={styles.container}>
-                <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+                <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
                     <LottieView source={require('../assets/meditationLottie.json')} autoPlay loop={true} style={{ width: width * 1, padding: 380, marginTop: -170, alignSelf: 'center' }} />
                     <Image source={require('../assets/asteriaLogoWhite.png')} style={{ width: width * 0.4, height: width * 0.45, resizeMode: 'contain', alignSelf: 'center', position: 'absolute' }} />
                     <SafeAreaView />
@@ -115,7 +116,7 @@ const SignIn: React.FC<SignInProps> = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </ScrollView>
+                </KeyboardAwareScrollView>
             </LinearGradient>
         </View>
     );

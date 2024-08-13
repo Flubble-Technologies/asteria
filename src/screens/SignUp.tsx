@@ -17,6 +17,7 @@ import MyShowMessage from '../components/common/MyShowMessage';
 import { ApiErrorType } from '../services/api.service';
 import { errorMessages } from '../types/IErrorMessages';
 import LinearGradient from 'react-native-linear-gradient';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const { width } = Dimensions.get('window');
 
@@ -90,7 +91,7 @@ const SignUp: React.FC<SignUpProps> = ({ navigation }) => {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={styles.container}>
-                <ScrollView style={{ flex: 1, paddingHorizontal: 25, }} contentContainerStyle={{ flexGrow: 1 }}>
+                <KeyboardAwareScrollView style={{ flex: 1, paddingHorizontal: 25, }} contentContainerStyle={{ flexGrow: 1 }}>
                     <SafeAreaView />
                     <Image source={require('../assets/asteriaLogoPurple.png')} style={{ width: width * 0.65, height: width * 0.5, alignSelf: 'center', resizeMode: 'contain' }} />
                     <Text style={styles.headerText}>Sign Up</Text>
@@ -140,7 +141,7 @@ const SignUp: React.FC<SignUpProps> = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </ScrollView>
+                </KeyboardAwareScrollView>
             </LinearGradient>
         </View>
     );
