@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Text, View, StyleSheet, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { DreamAnalysisCategories } from '../../constants/dream-analysis-categories';
 import { TimeFrame } from '../../constants/time-frame';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppStackParamList } from '../../types/navigation';
+import { getDreamsApi } from '../../api/requests/dreams.api';
+import MyShowMessage from '../common/MyShowMessage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -58,8 +60,26 @@ interface AnalysisProps {
 const Analysis = ({ timeFrame }: AnalysisProps) => {
 
     const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+    const [dreamCount, setDreamCount] = React.useState(0);
+
+    useFocusEffect(
+        useCallback(() => {
+            getDreamsApi().then((data) => {
+                setDreamCount(data.length);
+            });
+        }, [])
+    );
 
     const handleAnalysisPress = (title: DreamAnalysisCategories) => {
+
+        if (dreamCount === 0) {
+            MyShowMessage({
+                message: 'No Dreams Found',
+                description: 'You need to have at least one dream to access the analysis.',
+                type: 'info',
+            });
+            return;
+        }
         navigation.navigate('AsteriaChat', { selectedCategory: title, timeFrame, dream: null });
     }
 

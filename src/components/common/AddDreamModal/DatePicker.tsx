@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar } from '../../../assets/icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
@@ -15,9 +15,64 @@ interface DatePickerProps {
 }
 
 const DatePickerComponent = ({ date, setDate, openDatePicker, setOpenDatePicker }: DatePickerProps) => {
+
+
+
+
+    const renderDatePickerByPlatform = () => {
+        if (Platform.OS === 'ios') {
+            return (
+                <Modal
+                    isVisible={openDatePicker}
+                    onBackdropPress={() => setOpenDatePicker(false)}
+                    style={styles.datePickerModal}
+                >
+                    <View style={styles.datePickerContainer}>
+                        <DateTimePicker
+                            id='dateTimePicker'
+                            mode='date'
+                            value={date}
+                            display='spinner'
+                            style={styles.dateTimePicker}
+                            textColor='#fff'
+                            onChange={handleDateChange}
+                        />
+                        <TouchableOpacity
+                            style={styles.doneButton}
+                            onPress={() => setOpenDatePicker(false)}
+                        >
+                            <Text style={styles.doneButtonText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+
+            )
+        } else {
+            return (
+                <>
+                    {openDatePicker &&
+                        <DateTimePicker
+                            id='dateTimePicker'
+                            mode={undefined}
+                            value={date}
+                            display={'default'}
+                            style={styles.dateTimePicker}
+                            textColor='#fff'
+                            onChange={handleDateChange}
+                        />}
+                </>
+
+            )
+        }
+    }
+
+
+
     const handleDateChange = (event: any, selectedDate: any) => {
+
         const currentDate = selectedDate || date;
         setDate(currentDate);
+        setOpenDatePicker(Platform.OS === 'ios');
     };
 
     return (
@@ -32,28 +87,7 @@ const DatePickerComponent = ({ date, setDate, openDatePicker, setOpenDatePicker 
                 </View>
                 <Text style={styles.dateText}>{dayjs(date).format('DD MMM YYYY')}</Text>
             </TouchableOpacity>
-            <Modal
-                isVisible={openDatePicker}
-                onBackdropPress={() => setOpenDatePicker(false)}
-                style={styles.datePickerModal}
-            >
-                <View style={styles.datePickerContainer}>
-                    <DateTimePicker
-                        mode="date"
-                        value={date}
-                        display="spinner"
-                        style={styles.dateTimePicker}
-                        textColor='#fff'
-                        onChange={handleDateChange}
-                    />
-                    <TouchableOpacity
-                        style={styles.doneButton}
-                        onPress={() => setOpenDatePicker(false)}
-                    >
-                        <Text style={styles.doneButtonText}>Done</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+            {renderDatePickerByPlatform()}
         </View>
     );
 };

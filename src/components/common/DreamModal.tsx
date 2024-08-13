@@ -43,14 +43,14 @@ const DreamModal = ({ isVisible, toggleModal, selectedStar }: DreamModalProps) =
                     scrollEnabled={true}>
                     {selectedStar?.images.map((image, index) => (
                         <View key={index}>
-                            <ZoomableImage imageUrl={`http://192.168.1.107:9000/${image.image}`} />
+                            <ZoomableImage imageUrl={`https://856d796f7630.ngrok.app/${image.image}`} />
                         </View>
                     ))}
                 </PagerView>
                 <View style={styles.dateBackground} pointerEvents="none">
                     <Text style={styles.dateText}>{selectedStar.date}</Text>
                 </View>
-                <View style={styles.dreamDescriptionBackground} pointerEvents='none'>
+                <View style={styles.dreamDescriptionBackground} >
                     <Text style={styles.dreamTitle}>
                         {selectedStar.title}
                     </Text>

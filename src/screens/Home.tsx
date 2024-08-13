@@ -42,6 +42,7 @@ const Home = () => {
 	useFocusEffect(
 		useCallback(() => {
 			getDreamsApi().then((response) => {
+				console.log('response', response.map(dream => dream.initialX,));
 				setDreams(response);
 			});
 		}, [])
@@ -53,6 +54,7 @@ const Home = () => {
 				message: 'Dream is not ready yet',
 				type: 'warning',
 				description: 'Please wait for the dream to be ready',
+				duration: 3000,
 			});
 			return;
 		}

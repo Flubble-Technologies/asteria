@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, SafeAreaView } fr
 import Modal from 'react-native-modal';
 import { Tick } from '../../assets/icons';
 import { UUID } from '../../..';
-import { DreamImageStatus } from '../../constants/dream-image-status';
 import { getImageForDreamApi } from '../../api/requests/dreams.api';
 
 const { width } = Dimensions.get('window');
@@ -18,7 +17,7 @@ interface DreamProcessingModalProps {
 	setCurrentPhase: (phase: 'interpreting' | 'cartoonizing' | 'completed') => void;
 }
 
-const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCurrentPhase } : DreamProcessingModalProps) => {
+const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCurrentPhase }: DreamProcessingModalProps) => {
 	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
@@ -77,16 +76,22 @@ const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCu
 				) : (
 					<View style={styles.phaseContainer}>
 						{currentPhase === 'completed' ? (
-							<View style={styles.completedContainer}>
-								<Text style={styles.completedText}>Dream processing completed</Text>
-								<Tick size={width * 0.055} color='#fff' />
+							<>
+								<View style={styles.completedContainer}>
+									<Text style={styles.completedText}>Dream processing completed</Text>
+									<Tick size={width * 0.065} color='#fff' />
+								</View>
+								<View style={styles.completedContainer}>
+									<Text style={styles.completedText}>Dream cartoonization completed</Text>
+									<Tick size={width * 0.065} color='#fff' />
+								</View>
 								<TouchableOpacity
 									style={styles.closeButton}
 									onPress={onClose}
 								>
 									<Text style={styles.closeButtonText}>Close</Text>
 								</TouchableOpacity>
-							</View>
+							</>
 						) : (
 							<>
 								<Text style={styles.phaseText}>Now your dream is being cartoonized...</Text>
@@ -150,6 +155,8 @@ const styles = StyleSheet.create({
 	completedContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'center',
+		alignContent: 'center',
 		marginBottom: 15,
 		borderWidth: 1,
 		borderColor: 'rgba(255,255,255,0.3)',

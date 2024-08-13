@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
         marginTop: 7,
         fontSize: width * 0.04,
         color: 'rgba(255,255,255,0.9)',
+        zIndex: 99,
         fontFamily: 'Bangers-Regular',
     },
     moreText: {

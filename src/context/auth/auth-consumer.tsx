@@ -1,5 +1,3 @@
-//import LoadingScreen from '@/screens/LoadingScreen';
-
 import Splash from '../../screens/SplashScree';
 import { AuthContext } from './auth-context';
 

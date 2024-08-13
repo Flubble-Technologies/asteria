@@ -70,7 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const signUp = useCallback(async (data: ISignup, options: any) => {
         try {
-            return await signupApi(data, options);
+            const user =  await signupApi(data, options);
+            setSession(user);
+            return user;
         } catch (error) {
             //console.log("hata signupta", error)
             throw error;

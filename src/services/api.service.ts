@@ -42,7 +42,8 @@ const HandleApiError = (error: any) => {
         type: ApiErrorType.UNKNOWN,
         error,
     };
-    console.log('error', error.response);
+    console.log('error', error.response, error.response);
+    console.log('error', error.request,);
 
     if (error.response) {
         apiError.message = error.response.data.message;

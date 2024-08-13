@@ -41,10 +41,12 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
     const [currentPhase, setCurrentPhase] = useState<'interpreting' | 'cartoonizing' | 'completed'>('interpreting');
 
     const getRandomXandY = () => {
-        const x = Math.floor(Math.random() * width - 100);
-        const y = Math.floor(Math.random() * height - 100);
+        const padding = 100;
+        const x = Math.floor(Math.random() * (width - padding * 2)) + padding;
+        const y = Math.floor(Math.random() * (height - padding * 2)) + padding;
         return { x, y };
     }
+    
 
     const addDream = () => {
         if (dreamTitle.length === 0 || dreamDescription.length === 0) {
@@ -57,7 +59,13 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
         }
         setShowProcessingModal(true);
         setCurrentPhase('interpreting');
-        const { x, y } = getRandomXandY();
+        let { x, y } = { x: 0, y: 0 };
+        ({ x, y } = getRandomXandY());
+
+        if (x < 0 || y < 0) {
+            ({ x, y } = getRandomXandY());
+        }
+
         setLoading(true);
         createDreamApi({
             date,
