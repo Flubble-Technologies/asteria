@@ -75,12 +75,12 @@ const DreamProcessingModal = ({ isVisible, onClose, dreamId, currentPhase, setCu
 					</View>
 				) : (
 					<View style={styles.phaseContainer}>
+						<View style={styles.completedContainer}>
+							<Text style={styles.completedText}>Dream processing completed</Text>
+							<Tick size={width * 0.065} color='#fff' />
+						</View>
 						{currentPhase === 'completed' ? (
 							<>
-								<View style={styles.completedContainer}>
-									<Text style={styles.completedText}>Dream processing completed</Text>
-									<Tick size={width * 0.065} color='#fff' />
-								</View>
 								<View style={styles.completedContainer}>
 									<Text style={styles.completedText}>Dream cartoonization completed</Text>
 									<Tick size={width * 0.065} color='#fff' />

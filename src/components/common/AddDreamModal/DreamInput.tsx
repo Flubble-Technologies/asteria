@@ -21,6 +21,7 @@ const DreamInput = ({
             <TextInput
                 value={dreamTitle}
                 onChangeText={setDreamTitle}
+                autoComplete='off'
                 style={styles.titleInput}
                 placeholder='Add a dream title'
                 placeholderTextColor='rgba(255,255,255,0.3)'
@@ -28,6 +29,7 @@ const DreamInput = ({
             <TextInput
                 value={dreamDescription}
                 onChangeText={setDreamDescription}
+                autoComplete='off'
                 style={styles.descriptionInput}
                 placeholder='Add a dream with all the details (place, objects, people, etc.)'
                 placeholderTextColor='rgba(255,255,255,0.3)'

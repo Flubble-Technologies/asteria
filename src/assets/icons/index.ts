@@ -29,3 +29,4 @@ export { default as Loop } from './loop';
 export { default as ArrowLeft } from './arrowLeft';
 export { default as Tick } from './tick';
 export {default as Warning} from './warning';
+export {default as Underline} from './underline';

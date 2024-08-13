@@ -34,6 +34,8 @@ const DreamDiary = () => {
 	const [selectedDream, setSelectedDream] = useState<IDream | null>(null);
 	const [selectedType, setSelectedType] = useState<DreamType | null>(null);
 
+	console.log("dreams xxxxxx ",dreams)
+
 	const fetchDreams = useCallback(async () => {
 		console.log('fetchDreams', searchTextInput, selectedType, page);
 		const filters: Record<string, unknown> = {};

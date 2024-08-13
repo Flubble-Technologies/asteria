@@ -34,7 +34,6 @@ const chooseIcon = (type: DreamType) => {
 
 const DiaryItem = ({ item, toggleModal, index }: DiaryItemProps) => {
     const backgroundImage = backgroundImages[index % backgroundImages.length];
-
     if (!item) {
         return null;
     }

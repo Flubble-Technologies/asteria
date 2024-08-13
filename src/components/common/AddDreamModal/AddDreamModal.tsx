@@ -40,6 +40,8 @@ const AddDreamModal = ({ openAddDreamModal, toggleModal }: AddDreamModalProps) =
     const [selectedType, setSelectedType] = useState<DreamType>(DreamType.DREAM);
     const [currentPhase, setCurrentPhase] = useState<'interpreting' | 'cartoonizing' | 'completed'>('interpreting');
 
+    console.log("type", selectedType)
+
     const getRandomXandY = () => {
         const padding = 100;
         const x = Math.floor(Math.random() * (width - padding * 2)) + padding;

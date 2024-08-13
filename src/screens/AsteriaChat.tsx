@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, View, ActivityIndicator, Animated, TouchableOpacity, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ArrowLeft, Loop } from '../assets/icons';
+import { ArrowLeft, Loop, Underline } from '../assets/icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList, AsteriaChatProps } from '../types/navigation';
@@ -103,7 +103,7 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
         }
         typeWriter(dreamAnalysis, setInterpretationOrResults, () => { }, 10);
 
-        
+
     }, [dreamAnalysis]);
 
     return (
@@ -133,14 +133,14 @@ const AsteriaChat = ({ route }: AsteriaChatProps) => {
                 </View>
                 <ScrollView style={{ marginTop: 15 }} contentContainerStyle={{ paddingBottom: 30 }} showsVerticalScrollIndicator={false}>
                     <View style={styles.iconAndTitleContainer}>
-                        <Text style={styles.dreamTitle}>{dream?.title ? 'Dream interpretation of' : 'Analysis Results for'}</Text>
+                        <Text style={[styles.dreamTitle]}>{dream?.title ? 'Dream interpretation of' : 'Analysis Results for'}</Text>
                         {dream ?
-                            <View style={{ marginLeft: 5, position: 'relative' }}>
-                                <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
-                                    <Loop size={dynamicIconSize} color="#7E57C2" />
-                                </Animated.View>
-                                <Text style={[styles.dreamTitle, { position: 'absolute', top: 32, left: 9, fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{title}</Text>
-                            </View>
+                            <Animated.View style={{ transform: [{ translateX: slideAnim }],marginBottom: 5 }}>
+                                <View style={{ marginLeft: 5, position: 'relative',marginTop: 7 }}>
+                                    <Text style={[styles.dreamTitle, { fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{title}</Text>
+                                    <Underline size={dynamicIconSize} color="#7E57C2"/>
+                                </View>
+                            </Animated.View>
                             :
                             <Text style={[styles.dreamTitle, { paddingVertical: 15, fontFamily: 'Outfit-Bold', color: 'rgba(255,255,255,0.9)', }]}>{" "}{title}</Text>
                         }
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexWrap: 'wrap',
         justifyContent: 'center',
+        marginTop: 10,
     },
     dreamTitle: {
         color: 'rgba(255,255,255,0.7)',

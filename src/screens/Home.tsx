@@ -83,7 +83,7 @@ const Home = () => {
 				start={{ x: 0, y: 0 }}
 				end={{ x: 0, y: 1 }}
 				style={styles.container}>
-				{<Video
+				{/* {<Video
 					source={require('../assets/sky.mp4')}
 					style={styles.backgroundVideo}
 					resizeMode="cover"
@@ -96,7 +96,7 @@ const Home = () => {
 							videoRef.current.seek(0);
 						}
 					}}
-				/>}
+				/>} */}
 				{dreams.map(star => (
 					<Star
 						key={star.id}
