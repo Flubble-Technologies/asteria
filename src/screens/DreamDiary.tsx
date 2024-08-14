@@ -20,25 +20,53 @@ import MyShowMessage from '../components/common/MyShowMessage';
 import { useDreams } from '../context/dream/dream-provider.';
 import { IDream } from '../types/IDream';
 import { DreamType } from '../constants/dream-types';
+import { IQuery } from '../types/IQuery';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { height } = Dimensions.get('window');
 
 const DreamDiary = () => {
-	const { dreams, refreshDreams } = useDreams(); // Use context to access and refresh dreams
+	const { dreamsWithFilter: dreams, refreshDreams, hasMore, fetchDreamsWithFilter, error } = useDreams(); // Use context to access and refresh dreams
 	const [page, setPage] = useState(1);
-	const [error, setError] = useState(null);
-	const [hasMore, setHasMore] = useState(false);
+
 	const [searchVisible, setSearchVisible] = useState(false);
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [searchTextInput, setSearchTextInput] = useState('');
 	const [selectedDream, setSelectedDream] = useState<IDream | null>(null);
 	const [selectedType, setSelectedType] = useState<DreamType | null>(DreamType.DREAM);
 
+
+	const fetchDreams = useCallback(async () => {
+		const filters: Record<string, unknown> = {};
+		if (searchTextInput) {
+			filters.title = searchTextInput;
+		}
+		if (selectedType) {
+			filters.type = selectedType;
+		}
+
+		const params: IQuery = {
+			limit: 20,
+			page: page,
+			filters: filters,
+		};
+
+		fetchDreamsWithFilter(params);
+
+	}, [searchTextInput, selectedType, page]);
+
+	useFocusEffect(
+		useCallback(() => {
+			fetchDreams();
+		}, [fetchDreams])
+	);
+
 	const handleLoadMore = () => {
 		if (hasMore) {
 			setPage((prevPage) => prevPage + 1);
 		}
 	};
+
 
 	const handlePress = (item: IDream) => {
 		if (item.imageStatus !== DreamImageStatus.done) {
