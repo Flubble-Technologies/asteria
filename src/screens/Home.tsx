@@ -9,6 +9,7 @@ import { DreamImageStatus } from '../constants/dream-image-status';
 import { useDreams } from '../context/dream/dream-provider.';
 import { IDream } from '../types/IDream';
 import { UUID } from '../..';
+import Video from 'react-native-video';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,7 +18,7 @@ const Home = () => {
 	const starSize = 6;
 	const [rate, setRate] = useState(1);
 	const [imagePending, setImagePending] = useState(false);
-	const videoRef = useRef(null);
+	const videoRef = useRef<any>(null);
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [selectedDream, setSelectedDream] = useState<IDream | null>(null);
 	const [animatingStar, setAnimatingStar] = useState<UUID | null>(null);
@@ -65,6 +66,20 @@ const Home = () => {
 				start={{ x: 0, y: 0 }}
 				end={{ x: 0, y: 1 }}
 				style={styles.container}>
+				<Video
+					source={require('../assets/sky.mp4')}
+					style={styles.backgroundVideo}
+					resizeMode="cover"
+					repeat
+					paused={isModalVisible}
+					ref={videoRef}
+					rate={rate}
+					onEnd={() => {
+						if (videoRef.current && !isModalVisible) {
+							videoRef.current.seek(0);
+						}
+					}}
+				/>
 				{dreams.map(star => (
 					<Star
 						key={star.id}
